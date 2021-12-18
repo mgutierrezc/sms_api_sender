@@ -10,15 +10,38 @@
 import requests
 import os
 
+def txt_as_array(txt_path):
+    """
+    Reads txt file as array
+
+    Input: Txt file path (string)
+    Output: Lines (list of strings)
+    """
+
+    with open(txt_path) as file:
+        lines = file.read().splitlines() 
+    
+    output_list = []
+    for line in lines:
+        updated_line = str(line)
+        output_list.append(updated_line)
+
+    return output_list
+
 def altiriaSms(destinations, message, debug):
+	"""
+	Sends SMS using Altiria API
+
+	Input: destinations (list of strings), message (str), debug (boolean)
+	Output: None
+	"""
 	if debug:
-		print('Enter altiriaSms: ' + destinations+', message: ' + message)
 		try:
 			#Se crea la lista de parámetros a enviar en la petición POST
 			#XX, YY y ZZ se corresponden con los valores de identificación del usuario en el sistema.
 			payload = [
 				('cmd', 'sendsms'),
-				('domainId', 'XX'),
+				('domainId', 'CLI_3714'),
 				('login', os.environ.get("altiria_login")),
 				('passwd', os.environ.get("altiria_passwd")),
 				# No es posible utilizar el remitente en América pero sí en España y Europa
@@ -26,8 +49,11 @@ def altiriaSms(destinations, message, debug):
 				('msg', message)
 			]
 
+			print(os.environ.get("altiria_login"))
+			print(os.environ.get("altiria_passwd"))
+
 			#add destinations
-			for destination in destinations.split(","):
+			for destination in destinations:
 				payload.append(('dest', destination))
 
 			#Se fija la codificacion de caracteres de la peticion POST
@@ -49,10 +75,8 @@ def altiriaSms(destinations, message, debug):
 					print('ERROR GENERAL: '+str(r.status_code))
 				else: #Se procesa la respuesta 
 					print('Código de estado HTTP: '+str(r.status_code))
-					if (r.text).find("ERROR errNum:"):
-						print('Error de Altiria: '+r.text)
-					else:
-						print('Cuerpo de la respuesta: \n'+r.text)
+					print("Request value: ", r)
+					print("Request text: \n", r.text)
 
 			return r.text
 
@@ -66,3 +90,6 @@ def altiriaSms(destinations, message, debug):
 			print("Error interno: "+str(ex))
 		
 #altiriaSms('346xxxxxxxx,346yyyyyyyy','Mesaje de prueba', '', True)
+test_msgs = txt_as_array("D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test.csv")
+print(test_msgs)
+altiriaSms(test_msgs, "gaaaa", True)
