@@ -4,7 +4,8 @@ class AltiriaSMSSender(SMSSender):
     """
     SMS sender for Altiria API
 
-    Child class from SMSSender, obtained from sms_tools.sms_sending_tools
+    Child class from SMSSender, obtained from 
+    sms_tools.sms_sending_tools
     """
     
     def __init__(self, scraper_api_name, user, password, url, cmd, domainId):
@@ -34,4 +35,5 @@ class AltiriaSMSSender(SMSSender):
 
         return payload
     
+
     

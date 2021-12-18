@@ -9,6 +9,15 @@ author: Marco Gutierrez
 class SMSSender:
     """
     Parent class for defining SMS sender
+
+    Notes: 
+    - each child class will require its payload to be standardized
+    - each child class will require an output standardizer in order to 
+    store each sent msg and its status (if failed or not)
+    - each class will require an output handler in order to parse the output to
+    this format:
+    output = {"API used": self.scraper_api_name, "SMS text": None, 
+              "SMS number": None, "Status": None}
     """
 
     def __init__(self, scraper_api_name, user, password, url):
@@ -28,13 +37,6 @@ class SMSSender:
         # TODO: code customizer
         pass
 
-    # each child class will require its payload to be standardized
-    # each child class will require an output standardizer in order to 
-    # store each sent msg and its status (if failed or not)
-    # each class will require an output handler in order to parse the output to
-    # this format:
-    # output = {"API used": self.scraper_api_name, "SMS text": None, 
-    #               "SMS number": None, "Status": None}
 
     def sending_sms(self, payload, contentType, timeout, output_handler):
         """
