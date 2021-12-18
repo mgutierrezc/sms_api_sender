@@ -27,9 +27,20 @@ class SMSSender:
         """
 
         data_frame=pd.read_csv(csv_name)
-        data_frame=data_frame.astype(str)
 
+        if data_frame.shape[1] == 1:
+            list=[] 
+            for x in range(len(data_frame)):
+                list.append("")
+                #list with as many empty spaces as many rows in the csv
+
+            data_frame['Nombre']=list
+            data_frame['Parametro']=list
+        
+        data_frame=data_frame.astype(str) #transform to str
         return data_frame
+
+    
 
     def sms_text_customizer(self, base_text, name, additional_param):
         """
