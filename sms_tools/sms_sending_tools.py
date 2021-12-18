@@ -35,21 +35,17 @@ class SMSSender:
         """
         Adapts text for sending custom SMS
 
-        Input:base text message (str), name of receiver (str), additional param (str) 
+        Input: base text message (str), name of receiver (str), additional param (str) 
         Output: customized sms (str)
         """
 
-        self.base_text=base_text
-        self.name=name
-        self.additional_param=additional_param
+        if len(name)>0:
+            name=" "+name
+            
+        if len(additional_param)>0:
+            additional_param=" "+additional_param
 
-        if name and additional_param != "":
-            temp="{} {} ".format(additional_param, name)
-            new_text=temp+base_text
-            return new_text
-        else:
-
-            return base_text
+        return base_text.format(name,additional_param)
 
     # each class will require its payload to be standardized
     # each class will require an output standardizer in order to 
