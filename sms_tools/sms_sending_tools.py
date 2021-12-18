@@ -38,14 +38,14 @@ class SMSSender:
         Input:base text message (str), name of receiver (str), additional param (str) 
         Output: customized sms (str)
         """
-        
+
         self.base_text=base_text
         self.name=name
         self.additional_param=additional_param
 
         if name and additional_param != "":
-            new_text=additional_param+" "+name+" "+base_text
-
+            temp="{} {} ".format(additional_param, name)
+            new_text=temp+base_text
             return new_text
         else:
 
