@@ -28,23 +28,32 @@ class SMSSender:
         # TODO: code customizer
         pass
 
-    # each class will require its payload to be standardized
-    # each class will require an output standardizer in order to 
+    # each child class will require its payload to be standardized
+    # each child class will require an output standardizer in order to 
     # store each sent msg and its status (if failed or not)
+    # each class will require an output handler in order to parse the output to
+    # this format:
+    # output = {"API used": self.scraper_api_name, "SMS text": None, 
+    #               "SMS number": None, "Status": None}
 
-    def sending_sms(self, payload, contentType, timeout):
+    def sending_sms(self, payload, contentType, timeout, output_handler):
         """
         Sends a SMS to the specified number
 
-        Input: payload standardized for specific API (dict/list of tuples), 
+        Input: payload standardized (dict/list of tuples), 
         text for sms (str), content type/format (dict), timeout for connect 
-        and read (tuple)
+        and read (tuple), error handler (function)
         Output: info of sent sms (dict) 
         """
-    
-        output = {"API used": self.scraper_api_name, "SMS text": None, 
-                  "SMS number": None, "Status": None}
-        return output
+
+        import requests 
+
+        req_output = requests.post(self.url,
+				data=payload,
+				headers=contentType,
+				timeout=timeout)
+
+        return output_handler(req_output) # formatting and returning output
 
 
 ###### General Functions
