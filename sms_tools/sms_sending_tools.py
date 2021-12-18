@@ -6,7 +6,7 @@ author: Marco Gutierrez
 
 ###### Classes
 
-class EmailSender:
+class SMSSender:
     """
     Parent class for defining SMS sender
     """
