@@ -45,9 +45,17 @@ class AltiriaSMSSender(SMSSender):
         """
 
         parsed_output = {"API used": self.scraper_api_name, 
-                  "SMS text": payload[5][1], 
-                  "SMS number": payload[6][1]}
+                         "SMS text": payload[5][1], 
+                         "SMS number": payload[6][1]}
 
         # TODO: finish parser for error msg
+        if type(request_output) is dict: # for timeout failures
+            parsed_output["Status"] = "Error: " + request_output["failure"]
+        
+        elif request_output.status == "200":
+            parsed_output["Status"] = "Succesful"
 
+        else:
+            parsed_output["Status"] = "Error: " + request_output.status
+            
         return parsed_output
