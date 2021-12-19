@@ -26,7 +26,7 @@ Requirements:
 
 ### Create a SMS Sender
 
-In the folder senders, you'll find two sample SMS Senders
+In the folder `senders`, you'll find two sample SMS Senders, each for the following APIs
 - [Altiria](https://github.com/mgutierrezc/sms_api_sender/blob/master/senders/altiria_sms_sender.py)
 - [Gamanet](https://github.com/mgutierrezc/sms_api_sender/blob/master/senders/gamanet_sms_sender.py)
 
