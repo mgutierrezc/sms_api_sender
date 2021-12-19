@@ -52,11 +52,9 @@ class GamanetSMSSender(SMSSender):
 if __name__ == "__main__":
     import os
 
-    klo_gamanet_sender = GamanetSMSSender("Altiria", 
-                         user = os.environ.get("altiria_login"),
-                         password = os.environ.get("altiria_login"),
-                         url = "http://www.altiria.net/api/http",
-                         cmd = "sendsms",
-                         domainId = "CLI_3714")
+    klo_gamanet_sender = GamanetSMSSender("Gamanet", 
+                         user = os.environ.get("gamanet_apicard"),
+                         password = os.environ.get("gamanet_apikey"),
+                         url = "http://api2.gamanet.pe/smssend")
     
     # TODO: add statements for testing msg sending
