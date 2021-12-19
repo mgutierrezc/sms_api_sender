@@ -98,12 +98,13 @@ class SMSSender:
         Input: parsed db (df), base_text (str), payload_standardizer (function), contentType (dict) and Timeout (tuple), Number of rows to apply this method (int)
         Output: df with all the info of sent SMS
         """
+        rows = list(range(number_rows))
 
-        db['final_sms_text'] = db.apply(lambda x: self.sms_text_customizer(self,base_text,x['Nombre'], x['Parametro']), axis=1)
+        db['final_sms_text'] = db.apply(lambda x: self.sms_text_customizer(self,base_text,x['Nombre'], x['Parametro']) if x.name in rows else "", axis=1)
         
-        db['payload']=db.apply(lambda x: payload_standardizer(x['Nro'],x['final_sms_text']),axis=1)
+        db['payload']=db.apply(lambda x: payload_standardizer(x['Nro'],x['final_sms_text']) if x.name in rows else "",axis=1)
         
-        db['dictionaries']=db.apply(lambda x: self.sending_sms(self,x['payload'],contentType,Timeout),axis=1)
+        db['dictionaries']=db.apply(lambda x: self.sending_sms(self,x['payload'],contentType,Timeout) if x.name in rows else "",axis=1)
         
         df = db['dictionaries'].apply(pd.Series)
         
