@@ -128,4 +128,4 @@ Its structure will be the following
 |   | API used | SMS text | SMS number | Status    |
 |---|----------|----------|------------|-----------|
 | 0 | Gamanet  |          |            | Succesful |
-| 1 | Gamanet  |          |            | Error     |
+| 1 | Gamanet  |          |            | Error: Error name     |
