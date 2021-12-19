@@ -39,12 +39,16 @@ class GamanetSMSSender(SMSSender):
                          "SMS text": payload["smstext"], 
                          "SMS number": payload["smsnumber"]}
 
-        if request_output.message == "0":
+        print("request output: ", request_output)
+
+        if type(request_output) is dict: # for timeout failures
+            parsed_output["Status"] = "Error: " + request_output["failure"]
+
+        elif request_output.status_code == 200:
             parsed_output["Status"] = "Succesful"
 
         else:
-            parsed_output["Status"] = "Error: " + request_output.message +\
-                                      ". Description: " + request_output.description
+            parsed_output["Status"] = "Error: " + str(request_output.status_code)
             
         return parsed_output
 
@@ -57,4 +61,26 @@ if __name__ == "__main__":
                          password = os.environ.get("gamanet_apikey"),
                          url = "http://api2.gamanet.pe/smssend")
     
-    # TODO: add statements for testing msg sending
+    # 1. reading and parsing the data
+    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
+    parsed_sms_data =  klo_gamanet_sender.parser_for_csv(csv_data_path)
+
+    # 2. sending the messages and storing their info
+    sms_base_text = "Hola{}, esta es una prueba BEX con gamanet. Tu parámetro es{}. Si funciona, escríbele un wsp a Marco"
+    contentType = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    timeout = (5, 60) # timeout(timeout_connect, timeout_read)
+    number_of_messages = 2 
+
+    sent_sms_info = klo_gamanet_sender.multiple_sms_sender(
+                                      parsed_db=parsed_sms_data,
+                                      base_text=sms_base_text,
+                                      payload_standardizer=klo_gamanet_sender.payload_standardizer,
+                                      contentType=contentType,
+                                      timeout=timeout,
+                                      number_messages=number_of_messages,
+                                      output_parser=klo_gamanet_sender.output_parser
+                                      )
+    
+    # 3. storing sms data
+    sent_sms_info.to_excel("D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\output_info\\test_1_gamanet.xlsx",
+                           engine="xlsxwriter")
