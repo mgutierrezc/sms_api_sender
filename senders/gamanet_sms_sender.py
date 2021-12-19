@@ -29,7 +29,7 @@ class GamanetSMSSender(SMSSender):
 
     def output_parser(self, payload, request_output):
         """
-        Parses request output obtained from Altiria
+        Parses request output
 
         Input: payload (dict/list of tuples), request output (requests.models.Response)
         Output: parsed output (dict)
@@ -39,7 +39,6 @@ class GamanetSMSSender(SMSSender):
                          "SMS text": payload["smstext"], 
                          "SMS number": payload["smsnumber"]}
 
-        print("request output: ", request_output)
 
         if type(request_output) is dict: # for timeout failures
             parsed_output["Status"] = "Error: " + request_output["failure"]

@@ -133,8 +133,6 @@ class SMSSender:
         return sent_sms_information
 
 
-    
-
 ###### Functions
 
 def txt_as_array(txt_path):
