@@ -4,6 +4,11 @@ Tools for creating an email sender using any API
 author: Marco Gutierrez
 """
 
+###### General Imports
+
+import pandas as pd
+
+
 ###### Classes
 
 class SMSSender:
@@ -25,17 +30,44 @@ class SMSSender:
         self.user = user
         self.password = password
         self.url = url
+
+    
+    def parser_for_csv(self,csv_name):
+        """
+        Adapts a csv to a data frame
+
+        Input: the name of the csv file (str)
+        Output: data frame of the csv (str)
+        """
+
+        data_frame=pd.read_csv(csv_name)
+
+        if data_frame.shape[1] == 1:
+            list=[""]*len(data_frame)
+            #list with as many empty spaces as many rows in the csv
+
+            data_frame["Nombre"]=list
+            data_frame["Parametro"]=list
         
+        data_frame=data_frame.astype(str) #transform to str
+        return data_frame
+
 
     def sms_text_customizer(self, base_text, name, additional_param):
         """
         Adapts text for sending custom SMS
 
-        Input:base text message (str), name of receiver (str), additional param (str) 
+        Input: base text message (str), name of receiver (str), additional param (str) 
         Output: customized sms (str)
         """
-        # TODO: code customizer
-        pass
+
+        if len(name)>0:
+            name=" "+name
+            
+        if len(additional_param)>0:
+            additional_param=" "+additional_param
+
+        return base_text.format(name,additional_param)
 
 
     def sending_sms(self, payload, contentType, timeout, output_parser):
@@ -44,7 +76,7 @@ class SMSSender:
 
         Input: payload standardized (dict/list of tuples), 
         text for sms (str), content type/format (dict), timeout for connect 
-        and read (tuple), error handler (function)
+        and read (tuple), output parser (function)
         Output: info of sent sms (dict) 
         """
 
@@ -64,9 +96,45 @@ class SMSSender:
             req_output = {"failure": f"{ex}"}
 
         return output_parser(payload, req_output) # formatting and returning output
+    
+
+    def multiple_sms_sender(self, parsed_db, base_text, payload_standardizer, 
+                            contentType, timeout, number_messages, output_parser):
+    
+        """
+        Sends sms to a previously specified number of people
+
+        Input: parsed db (df), base_text (str), payload_standardizer (function),
+        contentType (dict) and Timeout (tuple), Number of rows to apply 
+        this method (int), output parser (function)
+        Output: df with all the info of sent SMS
+        """
+
+        aux_db = parsed_db.head(number_messages).copy() # keeping first N rows
+
+        # preparing custom msgs
+        aux_db["final_sms_text"] = aux_db.apply(lambda row: 
+                                                self.sms_text_customizer(base_text,
+                                                row["Nombre"], row["Parametro"]), axis=1)
+        
+        # preparing payload for respective API
+        aux_db["payload"] = aux_db.apply(lambda row: 
+                                         payload_standardizer(row["Nro"], 
+                                         row["final_sms_text"]),axis=1)
+        
+        # storing sms information 
+        aux_db["sms_info"] = aux_db.apply(lambda row: 
+                                          self.sending_sms(row["payload"], contentType, 
+                                                           timeout, output_parser), 
+                                                           axis=1)
+        
+        sent_sms_information = aux_db["sms_info"].apply(pd.Series)
+        
+        return sent_sms_information
 
 
-###### General Functions
+###### Functions
+
 def txt_as_array(txt_path):
     """
     Reads txt file as array
@@ -84,7 +152,3 @@ def txt_as_array(txt_path):
         output_list.append(updated_line)
 
     return output_list
-
-# TODO: parser that reads csv and generates df from it with everything as string
-# TODO: massive sender (input: parsed db, payload standardizer, returns df with output structure, sends sms to everyone
-# and , sends to each person)

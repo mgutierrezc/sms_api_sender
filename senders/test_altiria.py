@@ -68,7 +68,7 @@ def altiriaSms(destinations, message, debug):
 				headers=contentType,
 				#Se fija el tiempo máximo de espera para conectar con el servidor (5 segundos)
 				#Se fija el tiempo máximo de espera de la respuesta del servidor (60 segundos)
-				timeout=(5, 60)) #timeout(timeout_connect, timeout_read)
+				timeout=(5, 60)) # timeout(timeout_connect, timeout_read)
 
 			if debug:
 				print("r: ", r)
