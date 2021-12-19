@@ -59,3 +59,16 @@ class AltiriaSMSSender(SMSSender):
             parsed_output["Status"] = "Error: " + request_output.status
             
         return parsed_output
+
+
+if __name__ == "__main__":
+    import os
+
+    klo_altiria_sender = AltiriaSMSSender("Altiria", 
+                         user = os.environ.get("altiria_login"),
+                         password = os.environ.get("altiria_login"),
+                         url = "http://www.altiria.net/api/http",
+                         cmd = "sendsms",
+                         domainId = "CLI_3714")
+    
+    # TODO: add statements for testing msg sending
