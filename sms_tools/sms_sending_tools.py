@@ -50,10 +50,18 @@ class SMSSender:
 
         import requests 
 
-        req_output = requests.post(self.url,
-				data=payload,
-				headers=contentType,
-				timeout=timeout)
+        try:
+            req_output = requests.post(self.url,
+                    data=payload,
+                    headers=contentType,
+                    timeout=timeout)
+        
+        except requests.ConnectTimeout:
+            req_output = {"failure": "ConnectTimeout"}
+        except requests.ReadTimeout:
+            req_output = {"failure": "ReadTimeout"}
+        except Exception as ex:
+            req_output = {"failure": f"{ex}"}
 
         return output_parser(payload, req_output) # formatting and returning output
 
