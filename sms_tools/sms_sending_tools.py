@@ -32,8 +32,8 @@ class SMSSender:
             list=[""]*len(data_frame)
             #list with as many empty spaces as many rows in the csv
 
-            data_frame['Nombre']=list
-            data_frame['Parametro']=list
+            data_frame["Nombre"]=list
+            data_frame["Parametro"]=list
         
         data_frame=data_frame.astype(str) #transform to str
         return data_frame
@@ -90,9 +90,41 @@ class SMSSender:
             req_output = {"failure": f"{ex}"}
 
         return output_handler(req_output) # formatting and returning output
+    
+
+    def multiple_sms_sender(self, parsed_db, base_text, payload_standardizer, 
+                            contentType, Timeout, number_rows):
+    
+        """
+        Sends sms to a previously specified number of people
+
+        Input: parsed db (df), base_text (str), payload_standardizer (function),
+        contentType (dict) and Timeout (tuple), Number of rows to apply 
+        this method (int)
+        Output: df with all the info of sent SMS
+        """
+
+        aux_db = parsed_db.head(number_rows) # keeping first N rows
+
+        # preparing custom msgs
+        aux_db["final_sms_text"] = aux_db.apply(lambda row: 
+                                                self.sms_text_customizer(base_text,
+                                                row["Nombre"], row["Parametro"]), axis=1)
+        
+        # preparing payload for respective API
+        aux_db["payload"] = aux_db.apply(lambda row: 
+                                         payload_standardizer(row["Nro"], 
+                                         row["final_sms_text"]),axis=1)
+        
+        # storing sms information 
+        aux_db["sms_info"] = aux_db.apply(lambda row: 
+                                              self.sending_sms(self, row["payload"],
+                                              contentType,Timeout), axis=1)
+        sent_sms_information = aux_db["sms_info"].apply(pd.Series)
+        
+        return sent_sms_information
 
 
-###### General Functions
 def txt_as_array(txt_path):
     """
     Reads txt file as array
@@ -110,7 +142,3 @@ def txt_as_array(txt_path):
         output_list.append(updated_line)
 
     return output_list
-
-# TODO: parser that reads csv and generates df from it with everything as string
-# TODO: massive sender (input: parsed db, payload standardizer, returns df with output structure, sends sms to everyone
-# and , sends to each person)
