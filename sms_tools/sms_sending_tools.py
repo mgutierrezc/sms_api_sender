@@ -5,6 +5,7 @@ author: Marco Gutierrez
 """
 
 ###### Classes
+import pandas as pd
 
 class SMSSender:
     """
@@ -16,17 +17,44 @@ class SMSSender:
         self.user = user
         self.password = password
         self.url = url
+    
+    def parser_for_csv(self,csv_name):
+        """
+        Adapts a csv to a data frame
+
+        Input: the name of the csv file (str)
+        Output: data frame of the csv (str)
+        """
+
+        data_frame=pd.read_csv(csv_name)
+
+        if data_frame.shape[1] == 1:
+            list=[""]*len(data_frame)
+            #list with as many empty spaces as many rows in the csv
+
+            data_frame['Nombre']=list
+            data_frame['Parametro']=list
         
+        data_frame=data_frame.astype(str) #transform to str
+        return data_frame
+
+    
 
     def sms_text_customizer(self, base_text, name, additional_param):
         """
         Adapts text for sending custom SMS
 
-        Input:base text message (str), name of receiver (str), additional param (str) 
+        Input: base text message (str), name of receiver (str), additional param (str) 
         Output: customized sms (str)
         """
-        # TODO: code customizer
-        pass
+
+        if len(name)>0:
+            name=" "+name
+            
+        if len(additional_param)>0:
+            additional_param=" "+additional_param
+
+        return base_text.format(name,additional_param)
 
     # each child class will require its payload to be standardized
     # each child class will require an output standardizer in order to 
