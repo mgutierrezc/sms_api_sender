@@ -38,7 +38,7 @@ class SMSSender:
         pass
 
 
-    def sending_sms(self, payload, contentType, timeout, output_handler):
+    def sending_sms(self, payload, contentType, timeout, output_parser):
         """
         Sends a SMS to the specified number
 
@@ -55,7 +55,7 @@ class SMSSender:
 				headers=contentType,
 				timeout=timeout)
 
-        return output_handler(req_output) # formatting and returning output
+        return output_parser(payload, req_output) # formatting and returning output
 
 
 ###### General Functions

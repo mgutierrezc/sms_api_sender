@@ -72,6 +72,7 @@ def altiriaSms(destinations, message, debug):
 
 			if debug:
 				print("r: ", r)
+				print("r.type ", type(r))
 				print("r.status: ", r.status_code)
 				if str(r.status_code) != '200': #Error en la respuesta del servidor
 					print('ERROR GENERAL: '+str(r.status_code))

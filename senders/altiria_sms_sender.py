@@ -36,4 +36,18 @@ class AltiriaSMSSender(SMSSender):
         return payload
     
 
-    def 
+    def output_parser(self, payload, request_output):
+        """
+        Parses request output obtained from Altiria
+
+        Input: payload (dict/list of tuples), request output (requests.models.Response)
+        Output: parsed output (dict)
+        """
+
+        parsed_output = {"API used": self.scraper_api_name, 
+                  "SMS text": payload[5][1], 
+                  "SMS number": payload[6][1]}
+
+        # TODO: finish parser for error msg
+
+        return parsed_output
