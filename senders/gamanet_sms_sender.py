@@ -27,31 +27,6 @@ class GamanetSMSSender(SMSSender):
         return payload
     
 
-    def output_parser(self, payload, request_output):
-        """
-        Parses request output
-
-        Input: payload (dict/list of tuples), request output (requests.models.Response)
-        Output: parsed output (dict)
-        """
-
-        parsed_output = {"API used": self.scraper_api_name, 
-                         "SMS text": payload["smstext"], 
-                         "SMS number": payload["smsnumber"]}
-
-
-        if type(request_output) is dict: # for timeout failures
-            parsed_output["Status"] = "Error: " + request_output["failure"]
-
-        elif request_output.status_code == 200:
-            parsed_output["Status"] = "Succesful"
-
-        else:
-            parsed_output["Status"] = "Error: " + str(request_output.status_code)
-            
-        return parsed_output
-
-
 if __name__ == "__main__":
     import os
 

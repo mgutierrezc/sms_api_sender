@@ -36,7 +36,9 @@ class SMSSender:
         """
         Adapts a csv to a data frame
 
+
         Input: the name of the csv file (str)
+        
         Output: data frame of the csv (str)
         """
 
@@ -57,7 +59,9 @@ class SMSSender:
         """
         Adapts text for sending custom SMS
 
+
         Input: base text message (str), name of receiver (str), additional param (str) 
+        
         Output: customized sms (str)
         """
 
@@ -70,13 +74,16 @@ class SMSSender:
         return base_text.format(name,additional_param)
 
 
-    def sending_sms(self, payload, contentType, timeout, output_parser):
+    def sending_sms(self, payload, final_sms_text, phone_number, 
+                    contentType, timeout, output_parser):
         """
         Sends a SMS to the specified number
 
+
         Input: payload standardized (dict/list of tuples), 
-        text for sms (str), content type/format (dict), timeout for connect 
-        and read (tuple), output parser (function)
+        text for sms (str), phone number (str), content type/format (dict), 
+        timeout for connect and read (tuple), output parser (function)
+        
         Output: info of sent sms (dict) 
         """
 
@@ -95,8 +102,34 @@ class SMSSender:
         except Exception as ex:
             req_output = {"failure": f"{ex}"}
 
-        return output_parser(payload, req_output) # formatting and returning output
-    
+        return output_parser(final_sms_text, phone_number, req_output) # formatting and returning output
+
+
+    def output_parser(self, final_sms_text, phone_number, request_output):
+        """
+        Parses SMS request output
+
+
+        Input: payload (dict/list of tuples), request output (requests.models.Response)
+        
+        Output: parsed output (dict)
+        """
+
+        parsed_output = {"API used": self.scraper_api_name, 
+                         "SMS text": final_sms_text, 
+                         "SMS number": phone_number}
+
+        if type(request_output) is dict: # for timeout failures
+            parsed_output["Status"] = "Error: " + request_output["failure"]
+        
+        elif request_output.status_code == 200:
+            parsed_output["Status"] = "Succesful"
+
+        else:
+            parsed_output["Status"] = "Error: " + str(request_output.status_code)
+            
+        return parsed_output
+
 
     def multiple_sms_sender(self, parsed_db, base_text, payload_standardizer, 
                             contentType, timeout, number_messages, output_parser):
@@ -104,9 +137,11 @@ class SMSSender:
         """
         Sends sms to a previously specified number of people
 
+
         Input: parsed db (df), base_text (str), payload_standardizer (function),
         contentType (dict) and Timeout (tuple), Number of rows to apply 
         this method (int), output parser (function)
+        
         Output: df with all the info of sent SMS
         """
 
@@ -124,7 +159,10 @@ class SMSSender:
         
         # storing sms information 
         aux_db["sms_info"] = aux_db.apply(lambda row: 
-                                          self.sending_sms(row["payload"], contentType, 
+                                          self.sending_sms(row["payload"],
+                                                           row["final_sms_text"],
+                                                           row["Nro"],    
+                                                           contentType, 
                                                            timeout, output_parser), 
                                                            axis=1)
         
@@ -140,6 +178,7 @@ def txt_as_array(txt_path):
     Reads txt file as array
 
     Input: Txt file path (string)
+    
     Output: Lines (list of strings)
     """
 
