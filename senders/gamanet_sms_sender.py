@@ -8,6 +8,9 @@ class GamanetSMSSender(SMSSender):
     sms_tools.sms_sending_tools
     """
     
+    def __init__(self, scraper_api_name, user, password, url, voice = False):
+        super().__init__(scraper_api_name, user, password, url)
+        self.voice = voice
     
     def payload_standardizer(self, phone_number, final_sms_text):
         """
@@ -22,8 +25,27 @@ class GamanetSMSSender(SMSSender):
             "apikey": self.password,
             "smsnumber": phone_number,
             "smstext": final_sms_text
+
         }
 
+        if self.voice is True:
+            payload = {
+                "apicard": self.user,
+                "apikey": self.password,
+                "number": phone_number,
+                "text": final_sms_text,
+                "voz": "paulina",
+                "shorturl": "1"
+                }
+
+        else:
+            payload = {
+                "apicard": self.user,
+                "apikey": self.password,
+                "smsnumber": phone_number,
+                "smstext": final_sms_text,
+                "shorturl": "1"
+            }
         return payload
     
 
@@ -33,17 +55,20 @@ if __name__ == "__main__":
     klo_gamanet_sender = GamanetSMSSender("Gamanet", 
                          user = os.environ.get("gamanet_apicard"),
                          password = os.environ.get("gamanet_apikey"),
-                         url = "http://api2.gamanet.pe/smssend")
+                         url = "http://api2.gamanet.pe/smssend", # for sms
+                         # url = "http://api10.gamanet.pe/sendtts",
+                         voice = False)
     
     # 1. reading and parsing the data
-    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
+    # csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
+    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\personal_linls_27-12-21_marco_adapted.csv"
     parsed_sms_data =  klo_gamanet_sender.parser_for_csv(csv_data_path)
 
     # 2. sending the messages and storing their info
-    sms_base_text = "Hola{}, esta es una prueba BEX con gamanet. Tu parámetro es{}. Si funciona, escríbele un wsp a Marco"
+    sms_base_text = "Hola, si funciona, escríbele un wsp a Marco. Prueba Gamanet url: {}"
     contentType = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     timeout = (5, 60) # timeout(timeout_connect, timeout_read)
-    number_of_messages = 2 
+    number_of_messages = 4 
 
     sent_sms_info = klo_gamanet_sender.multiple_sms_sender(
                                       parsed_db=parsed_sms_data,

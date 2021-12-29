@@ -53,11 +53,11 @@ if __name__ == "__main__":
                          domainId = "CLI_3714")
     
     # 1. reading and parsing the data
-    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
+    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\personal_linls_27-12-21_marco_adapted.csv"
     parsed_sms_data =  klo_altiria_sender.parser_for_csv(csv_data_path)
 
     # 2. sending the messages and storing their info
-    sms_base_text = "Hola{}, esta es una prueba BEX. Tu parámetro es{}. Si funciona, escríbele un wsp a Marco"
+    sms_base_text = "Hola, prueba Altiria url:{}. Si funciona, escríbele un wsp a Marco"
     contentType = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     timeout = (5, 60) # timeout(timeout_connect, timeout_read)
     number_of_messages = 2 

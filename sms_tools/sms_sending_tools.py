@@ -6,6 +6,7 @@ author: Marco Gutierrez
 
 ###### General Imports
 
+from datetime import date
 import pandas as pd
 
 
@@ -48,30 +49,30 @@ class SMSSender:
             list=[""]*len(data_frame)
             #list with as many empty spaces as many rows in the csv
 
-            data_frame["Nombre"]=list
-            data_frame["Parametro"]=list
+            data_frame["Parametro_1"]=list
+            data_frame["Parametro_2"]=list
         
         data_frame=data_frame.astype(str) #transform to str
         return data_frame
 
 
-    def sms_text_customizer(self, base_text, name, additional_param):
+    def sms_text_customizer(self, base_text, param_base, additional_param):
         """
         Adapts text for sending custom SMS
 
 
-        Input: base text message (str), name of receiver (str), additional param (str) 
+        Input: base text message (str), base parameter (str), additional param (str) 
         
         Output: customized sms (str)
         """
 
-        if len(name)>0:
-            name=" "+name
+        if len(param_base)>0:
+            param_base=" "+param_base
             
         if len(additional_param)>0:
             additional_param=" "+additional_param
 
-        return base_text.format(name,additional_param)
+        return base_text.format(param_base,additional_param)
 
 
     def sending_sms(self, payload, final_sms_text, phone_number, 
@@ -87,7 +88,9 @@ class SMSSender:
         Output: info of sent sms (dict) 
         """
 
-        import requests 
+        import requests, datetime
+
+        timestamp = datetime.datetime.now()
 
         try:
             req_output = requests.post(self.url,
@@ -102,10 +105,10 @@ class SMSSender:
         except Exception as ex:
             req_output = {"failure": f"{ex}"}
 
-        return output_parser(final_sms_text, phone_number, req_output) # formatting and returning output
+        return output_parser(final_sms_text, phone_number, req_output, timestamp) # formatting and returning output
 
 
-    def output_parser(self, final_sms_text, phone_number, request_output):
+    def output_parser(self, final_sms_text, phone_number, request_output, timestamp):
         """
         Parses SMS request output
 
@@ -117,7 +120,8 @@ class SMSSender:
 
         parsed_output = {"API used": self.scraper_api_name, 
                          "SMS text": final_sms_text, 
-                         "SMS number": phone_number}
+                         "SMS number": phone_number,
+                         "Timestamp": timestamp}
 
         if type(request_output) is dict: # for timeout failures
             parsed_output["Status"] = "Error: " + request_output["failure"]
@@ -150,14 +154,14 @@ class SMSSender:
         # preparing custom msgs
         aux_db["final_sms_text"] = aux_db.apply(lambda row: 
                                                 self.sms_text_customizer(base_text,
-                                                row["Nombre"], row["Parametro"]), axis=1)
+                                                row["Parametro_1"], row["Parametro_2"]), axis=1)
         
         # preparing payload for respective API
         aux_db["payload"] = aux_db.apply(lambda row: 
                                          payload_standardizer(row["Nro"], 
                                          row["final_sms_text"]),axis=1)
         
-        # storing sms information 
+        # storing sms information TODO: add timestamp here?
         aux_db["sms_info"] = aux_db.apply(lambda row: 
                                           self.sending_sms(row["payload"],
                                                            row["final_sms_text"],
