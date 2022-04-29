@@ -89,7 +89,7 @@ a package for another script.
 
 The csv should have this structure:
 
-| Nombre | Parametro_1 | Parametro_2 |
+| Nro | Parametro_1 | Parametro_2 |
 |--------|-----|-----------|
 |        |     |           |
 
