@@ -55,20 +55,22 @@ if __name__ == "__main__":
     klo_gamanet_sender = GamanetSMSSender("Gamanet", 
                          user = os.environ.get("gamanet_apicard"),
                          password = os.environ.get("gamanet_apikey"),
-                         url = "http://api2.gamanet.pe/smssend", # for sms
-                         # url = "http://api10.gamanet.pe/sendtts",
-                         voice = False)
+                         # url = "http://api2.gamanet.pe/smssend", # for sms
+                         url = "http://api10.gamanet.pe/sendtts",
+                         voice = True)
     
     # 1. reading and parsing the data
     # csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
-    csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\personal_linls_27-12-21_marco_adapted.csv"
+    file_name = r"\prueba"
+    input_extension = ".csv"
+    csv_data_path = r"D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\final data\Test audio" + file_name + input_extension
     parsed_sms_data =  klo_gamanet_sender.parser_for_csv(csv_data_path)
 
     # 2. sending the messages and storing their info
-    sms_base_text = "Hola, si funciona, escríbele un wsp a Marco. Prueba Gamanet url: {}"
+    sms_base_text = "Hola {}. No arrojes tus desechos al alcantarillado. Esto genera atoros y aniegos. Gracias. SECOSAN"
     contentType = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     timeout = (5, 60) # timeout(timeout_connect, timeout_read)
-    number_of_messages = 4 
+    number_of_messages = 1
 
     sent_sms_info = klo_gamanet_sender.multiple_sms_sender(
                                       parsed_db=parsed_sms_data,
@@ -81,5 +83,6 @@ if __name__ == "__main__":
                                       )
     
     # 3. storing sms data
-    sent_sms_info.to_excel("D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\output_info\\test_1_gamanet.xlsx",
+    output_extension = ".xlsx"
+    sent_sms_info.to_excel(r"D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\output_info\Summary reports\Primer envío 25-08-22 17_00" + file_name + output_extension,
                            engine="xlsxwriter")
