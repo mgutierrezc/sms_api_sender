@@ -8,7 +8,6 @@ author: Marco Gutierrez
 
 from datetime import date
 import pandas as pd
-import str
 
 ###### Classes
 
@@ -66,7 +65,7 @@ class SMSSender:
         """
 
         if "," in params:
-            splitted_params = str.split(params, ",")
+            splitted_params = params.split(",")
             return base_text.format(*splitted_params)
         else:
             return base_text.format(params)

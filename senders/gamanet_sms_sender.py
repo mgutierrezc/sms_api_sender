@@ -55,9 +55,10 @@ if __name__ == "__main__":
     klo_gamanet_sender = GamanetSMSSender("Gamanet", 
                          user = os.environ.get("gamanet_apicard"),
                          password = os.environ.get("gamanet_apikey"),
-                         # url = "http://api2.gamanet.pe/smssend", # for sms
-                         url = "http://api10.gamanet.pe/sendtts",
-                         voice = True)
+                         url = "http://api2.gamanet.pe/smssend", # for sms
+                         # url = "http://api10.gamanet.pe/sendtts",
+                         # voice = False
+                         )
     
     # 1. reading and parsing the data
     # csv_data_path = "D:\Accesos directos\Trabajo\GECE - LEEX\Kristian\Projects\Agua\csvs\\test_custom.csv"
@@ -67,10 +68,10 @@ if __name__ == "__main__":
     parsed_sms_data =  klo_gamanet_sender.parser_for_csv(csv_data_path)
 
     # 2. sending the messages and storing their info
-    sms_base_text = "Hola {}. No arrojes tus desechos al alcantarillado. Esto genera atoros y aniegos. Gracias. SECOSAN"
+    sms_base_text = "Hola {}. No arrojes tus desechos al alcantarillado."
     contentType = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     timeout = (5, 60) # timeout(timeout_connect, timeout_read)
-    number_of_messages = 1
+    number_of_messages = 3
 
     sent_sms_info = klo_gamanet_sender.multiple_sms_sender(
                                       parsed_db=parsed_sms_data,
