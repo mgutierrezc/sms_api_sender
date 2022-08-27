@@ -8,7 +8,7 @@ author: Marco Gutierrez
 
 from datetime import date
 import pandas as pd
-
+import str
 
 ###### Classes
 
@@ -49,30 +49,25 @@ class SMSSender:
             list=[""]*len(data_frame)
             #list with as many empty spaces as many rows in the csv
 
-            data_frame["Parametro_1"]=list
-            data_frame["Parametro_2"]=list
+            data_frame["Parametros"]=list
         
         data_frame=data_frame.astype(str) #transform to str
         return data_frame
 
 
-    def sms_text_customizer(self, base_text, param_base, additional_param):
+    def sms_text_customizer(self, base_text, params):
         """
         Adapts text for sending custom SMS
 
 
-        Input: base text message (str), base parameter (str), additional param (str) 
+        Input: base text message (str), parameters (str) 
         
         Output: customized sms (str)
         """
 
-        if len(param_base)>0:
-            param_base=" "+param_base
-            
-        if len(additional_param)>0:
-            additional_param=" "+additional_param
+        splitted_params = str.split(params, ",")
 
-        return base_text.format(param_base,additional_param)
+        return base_text.format(*splitted_params)
 
 
     def sending_sms(self, payload, final_sms_text, phone_number, 
@@ -154,7 +149,7 @@ class SMSSender:
         # preparing custom msgs
         aux_db["final_sms_text"] = aux_db.apply(lambda row: 
                                                 self.sms_text_customizer(base_text,
-                                                row["Parametro_1"], row["Parametro_2"]), axis=1)
+                                                row["Parametros"]), axis=1)
         
         # preparing payload for respective API
         aux_db["payload"] = aux_db.apply(lambda row: 
