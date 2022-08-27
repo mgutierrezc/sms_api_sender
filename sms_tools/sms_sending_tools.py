@@ -65,9 +65,11 @@ class SMSSender:
         Output: customized sms (str)
         """
 
-        splitted_params = str.split(params, ",")
-
-        return base_text.format(*splitted_params)
+        if "," in params:
+            splitted_params = str.split(params, ",")
+            return base_text.format(*splitted_params)
+        else:
+            return base_text.format(params)
 
 
     def sending_sms(self, payload, final_sms_text, phone_number, 
